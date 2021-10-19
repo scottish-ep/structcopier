@@ -1,4 +1,4 @@
-package deepcopier
+package structcopy
 
 import (
 	"database/sql/driver"
