@@ -1,4 +1,4 @@
-Introducing deepcopier, a Go library to make copying of structs a bit easier 
+Introducing structcopier, a Go library to make copying of structs a bit easier 
 ============================================================================
 
 Context 
@@ -11,7 +11,7 @@ When working with models in Go, you don't want to expose all columns and
 also implement more methods without writing a lot of code, because everyone
 knows programmers are lazy ;)
 
-deepcopier_ will help you in your daily job when you want to copy a struct into
+structcopier_ will help you in your daily job when you want to copy a struct into
 another one (think resource) or from another one (think payload).
 
 Installation
@@ -22,7 +22,7 @@ so run this command in your shell:
 
 ::
 
-    $ go get github.com/scottish-ep/deepcopier
+    $ go get github.com/scottish-ep/structcopier
 
 You are now ready to use this library.
 
@@ -251,7 +251,7 @@ Implement a separate struct named ``AccountResource``
         return fmt.Sprintf("%s %s", a.FirstName, a.LastName)
     }
 
-and rewrite ``Accounts.Detail`` to use deepcopier_
+and rewrite ``Accounts.Detail`` to use structcopier_
 
 .. code-block:: go
 
@@ -266,7 +266,7 @@ and rewrite ``Accounts.Detail`` to use deepcopier_
 
         resource := &AccountResource{}
 
-        deepcopier.Copy(account).To(resource)
+        structcopier.Copy(account).To(resource)
 
         w.WriteJson(&resource)
     }
@@ -306,7 +306,7 @@ some context to retrieve the base url in ``api_url`` attribute.
 
         context := map[string]interface{}{"base_url": r.BaseUrl()}
 
-        deepcopier.Copy(account).WithContext(context).To(resource)
+        structcopier.Copy(account).WithContext(context).To(resource)
 
         w.WriteJson(&resource)
     }
@@ -323,7 +323,7 @@ We need to update ``AccountResource`` to implement the ``ApiUrl`` new method
         Name       string    `json:"name"`
         Email      string    `json:"email"`
         DateJoined time.Time `json:"date_joined"`
-        ApiUrl     string    `deepcopier:"context" json:"api_url"`
+        ApiUrl     string    `structcopier:"context" json:"api_url"`
     }
 
     func (a Account) Name() string {
@@ -354,12 +354,12 @@ If you have reached to the bottom you belong to the brave!
 
 It has been a long introduction, hope your enjoy it!
 
-Contributing to deepcopier
+Contributing to structcopier
 --------------------------
 
 * Ping us on twitter `@oibafsellig <https://twitter.com/oibafsellig>`_, `@thoas <https://twitter.com/thoas>`_
-* Fork the `project <https://github.com/scottish-ep/deepcopier>`_
-* Fix `bugs <https://github.com/scottish-ep/deepcopier/issues>`_
+* Fork the `project <https://github.com/scottish-ep/structcopier>`_
+* Fix `bugs <https://github.com/scottish-ep/structcopier/issues>`_
 
 Don't hesitate ;)
 
@@ -371,4 +371,4 @@ Don't hesitate ;)
 .. _postgresql: http://www.postgresql.org/
 .. _go-json-rest: https://github.com/ant0ine/go-json-rest
 .. _gorm: https://github.com/jinzhu/gorm
-.. _deepcopier: https://github.com/scottish-ep/deepcopier
+.. _structcopier: https://github.com/scottish-ep/structcopier

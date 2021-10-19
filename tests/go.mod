@@ -1,4 +1,4 @@
-module github.com/scottish-ep/deepcopier/tests
+module github.com/scottish-ep/structcopier/tests
 
 go 1.14
 
@@ -7,7 +7,7 @@ require (
 	github.com/lib/pq v1.4.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/stretchr/testify v1.5.1
-	github.com/scottish-ep/deepcopier v0.0.0
+	github.com/scottish-ep/structcopier v0.0.0
 )
 
-replace github.com/scottish-ep/deepcopier => ../
+replace github.com/scottish-ep/structcopier => ../

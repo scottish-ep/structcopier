@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/scottish-ep/deepcopier"
+	"github.com/scottish-ep/structcopier"
 )
 
 // Model
@@ -17,9 +17,9 @@ func (u *User) MethodThatTakesContext(ctx map[string]interface{}) string {
 
 // Resource
 type UserResource struct {
-	DisplayName            string `deepcopier:"field:Name"`
-	SkipMe                 string `deepcopier:"skip"`
-	MethodThatTakesContext string `deepcopier:"context"`
+	DisplayName            string `structcopier:"field:Name"`
+	SkipMe                 string `structcopier:"skip"`
+	MethodThatTakesContext string `structcopier:"context"`
 }
 
 func main() {
@@ -29,7 +29,7 @@ func main() {
 
 	resource := &UserResource{}
 
-	deepcopier.Copy(user).To(resource)
+	structcopier.Copy(user).To(resource)
 
 	fmt.Println(resource.DisplayName)
 }

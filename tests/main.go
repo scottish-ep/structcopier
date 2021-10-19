@@ -4,14 +4,14 @@ import (
     "fmt"
 
     "database/sql"
-    "github.com/scottish-ep/deepcopier"
+    "github.com/scottish-ep/structcopier"
 )
 
 // Model
 type User struct {
     // Basic string field
     Name  string
-    // Deepcopier supports https://golang.org/pkg/database/sql/driver/#Valuer
+    // structcopier supports https://golang.org/pkg/database/sql/driver/#Valuer
     Email sql.NullString
 }
 
@@ -22,10 +22,10 @@ func (u *User) MethodThatTakesContext(ctx map[string]interface{}) string {
 
 // Resource
 type UserResource struct {
-    DisplayName            string `deepcopier:"field:Name"`
-    SkipMe                 string `deepcopier:"skip"`
-    MethodThatTakesContext string `deepcopier:"context"`
-    Email                  string `deepcopier:"force"`
+    DisplayName            string `structcopier:"field:Name"`
+    SkipMe                 string `structcopier:"skip"`
+    MethodThatTakesContext string `structcopier:"context"`
+    Email                  string `structcopier:"force"`
 
 }
 
@@ -42,8 +42,8 @@ func main() {
     filters := map[string]interface{}{
         "fields" : []string{"Name"},
     }
-    deepcopier.Copy(user).Filter(filters).To(resource)
-    // deepcopier.Copy(user).To(resource)
+    structcopier.Copy(user).Filter(filters).To(resource)
+    // structcopier.Copy(user).To(resource)
 
     fmt.Println(resource.DisplayName)
     fmt.Println(resource.Email)

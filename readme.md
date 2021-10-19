@@ -1,14 +1,14 @@
-# Deepcopier
+# structcopier
 
-[![Build Status](https://secure.travis-ci.org/ulule/deepcopier.svg?branch=master)](http://travis-ci.org/ulule/deepcopier)
+[![Build Status](https://secure.travis-ci.org/ulule/structcopier.svg?branch=master)](http://travis-ci.org/ulule/structcopier)
 
 This package is copy from deepcopier of [Ulule team](https://github.com/ulule).
-Due to deepcopier hasn't updated for a long time, I created this repo to fix some bugs and extend some new features. Deepcopier is meant to make copying of structs to/from others structs a bit easier.
+Due to deepcopier hasn't updated for a long time, I created this repo to fix some bugs and extend some new features. structcopier is meant to make copying of structs to/from others structs a bit easier.
 
 ## Installation
 
 ```bash
-go get -u github.com/scottish-ep/deepcopier
+go get -u github.com/scottish-ep/structcopier
 ```
 
 ## Usage
@@ -34,7 +34,7 @@ Copy(instance1).Filter(filters).To(instance2)
 Copy(instance1).WithContext(map[string]interface{}{"foo": "bar"}).From(instance2)
 ```
 
-Available options for `deepcopier` struct tag:
+Available options for `structcopier` struct tag:
 
 | Option    | Description                                                          |
 | --------- | -------------------------------------------------------------------- |
@@ -59,11 +59,11 @@ func (Source) MethodThatTakesContext(c map[string]interface{}) string {
 }
 
 type Destination struct {
-    FieldWithAnotherNameInSource      string         `deepcopier:"field:Name"`
-    SkipMe                            string         `deepcopier:"skip"`
-    MethodThatTakesContext            string         `deepcopier:"context"`
+    FieldWithAnotherNameInSource      string         `structcopier:"field:Name"`
+    SkipMe                            string         `structcopier:"skip"`
+    MethodThatTakesContext            string         `structcopier:"context"`
     SQLNullStringToSQLNullString      sql.NullString
-    SQLNullStringToString             string         `deepcopier:"force"`
+    SQLNullStringToString             string         `structcopier:"force"`
 }
 
 ```
@@ -76,14 +76,14 @@ package main
 import (
     "fmt"
 
-    "github.com/scottish-ep/deepcopier"
+    "github.com/scottish-ep/structcopier"
 )
 
 // Model
 type User struct {
     // Basic string field
     Name  string
-    // Deepcopier supports https://golang.org/pkg/database/sql/driver/#Valuer
+    // structcopier supports https://golang.org/pkg/database/sql/driver/#Valuer
     Email sql.NullString
 }
 
@@ -94,10 +94,10 @@ func (u *User) MethodThatTakesContext(ctx map[string]interface{}) string {
 
 // Resource
 type UserResource struct {
-    DisplayName            string `deepcopier:"field:Name"`
-    SkipMe                 string `deepcopier:"skip"`
-    MethodThatTakesContext string `deepcopier:"context"`
-    Email                  string `deepcopier:"force"`
+    DisplayName            string `structcopier:"field:Name"`
+    SkipMe                 string `structcopier:"skip"`
+    MethodThatTakesContext string `structcopier:"context"`
+    Email                  string `structcopier:"force"`
 
 }
 
@@ -112,13 +112,13 @@ func main() {
 
     resource := &UserResource{}
     // copy all fields from user to resource based on struct tag
-    deepcopier.Copy(user).To(resource)
+    structcopier.Copy(user).To(resource)
 
     // ignore name when copy from user to resource
     filters := map[string]interface{}{
         "fields" : []string{"Name"},
     }
-    deepcopier.Copy(user).Filter(filters).To(resource)
+    structcopier.Copy(user).Filter(filters).To(resource)
 
     // skip
     fmt.Println(resource.DisplayName)

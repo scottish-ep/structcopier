@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	// TagName is the deepcopier struct tag name.
-	TagName = "deepcopier"
+	// TagName is the structcopier struct tag name.
+	TagName = "structcopier"
 	// FieldOptionName is the from field option name for struct tag.
 	FieldOptionName = "field"
 	// ContextOptionName is the context option name for struct tag.
@@ -35,8 +35,8 @@ type (
 	}
 )
 
-// DeepCopier deep copies a struct to/from a struct.
-type DeepCopier struct {
+// structcopier deep copies a struct to/from a struct.
+type structcopier struct {
 	dst interface{}
 	src interface{}
 	ctx map[string]interface{}
@@ -44,28 +44,28 @@ type DeepCopier struct {
 }
 
 // Copy sets source or destination.
-func Copy(src interface{}) *DeepCopier {
-	return &DeepCopier{src: src}
+func Copy(src interface{}) *structcopier {
+	return &structcopier{src: src}
 }
 // WithContext injects the given context into the builder instance.
-func (dc *DeepCopier) WithContext(ctx map[string]interface{}) *DeepCopier {
+func (dc *structcopier) WithContext(ctx map[string]interface{}) *structcopier {
 	dc.ctx = ctx
 	return dc
 }
 
-func (dc *DeepCopier) Filter(filter map[string]interface{}) *DeepCopier {
+func (dc *structcopier) Filter(filter map[string]interface{}) *structcopier {
 	dc.filter = filter
 	return dc
 }
 
 // To sets the destination.
-func (dc *DeepCopier) To(dst interface{}) error {
+func (dc *structcopier) To(dst interface{}) error {
 	dc.dst = dst
 	return process(dc.dst, dc.src, Options{Context: dc.ctx, Filter: dc.filter})
 }
 
 // From sets the given the source as destination and destination as source.
-func (dc *DeepCopier) From(src interface{}) error {
+func (dc *structcopier) From(src interface{}) error {
 	dc.dst = dc.src
 	dc.src = src
 	return process(dc.dst, dc.src, Options{Context: dc.ctx, Reversed: true, Filter: dc.filter})
@@ -284,19 +284,19 @@ func process(dst interface{}, src interface{}, args ...Options) error {
 		return nil
 	}
 
-	// getTagOptions parses deepcopier tag field and returns options.
+	// getTagOptions parses structcopier tag field and returns options.
 	func getTagOptions(value string) TagOptions {
 		options := TagOptions{}
 
 		for _, opt := range strings.Split(value, ";") {
 			o := strings.Split(opt, ":")
 
-			// deepcopier:"keyword; without; value;"
+			// structcopier:"keyword; without; value;"
 			if len(o) == 1 {
 				options[o[0]] = ""
 			}
 
-			// deepcopier:"key:value; anotherkey:anothervalue"
+			// structcopier:"key:value; anotherkey:anothervalue"
 			if len(o) == 2 {
 				options[strings.TrimSpace(o[0])] = strings.TrimSpace(o[1])
 			}

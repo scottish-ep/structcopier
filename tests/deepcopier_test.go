@@ -9,7 +9,7 @@ import (
 	"github.com/lib/pq"
 	uuid "github.com/satori/go.uuid"
 	assert "github.com/stretchr/testify/require"
-	"github.com/scottish-ep/deepcopier"
+	"github.com/scottish-ep/structcopier"
 )
 
 func TestField(t *testing.T) {
@@ -27,7 +27,7 @@ func TestField(t *testing.T) {
 			MapPtr    *map[string]interface{}
 			Struct    Rel
 			StructPtr *Rel
-			Skipped   string `deepcopier:"skip"`
+			Skipped   string `structcopier:"skip"`
 		}
 
 		Dst struct {
@@ -39,19 +39,19 @@ func TestField(t *testing.T) {
 			MapPtr    *map[string]interface{}
 			Struct    Rel
 			StructPtr *Rel
-			Skipped   string `deepcopier:"skip"`
+			Skipped   string `structcopier:"skip"`
 		}
 
 		Renamed struct {
-			MyInt       int                     `deepcopier:"field:Int"`
-			MyIntPtr    *int                    `deepcopier:"field:IntPtr"`
-			MySlice     []string                `deepcopier:"field:Slice"`
-			MySlicePtr  *[]string               `deepcopier:"field:SlicePtr"`
-			MyMap       map[string]interface{}  `deepcopier:"field:Map"`
-			MyMapPtr    *map[string]interface{} `deepcopier:"field:MapPtr"`
-			MyStruct    Rel                     `deepcopier:"field:Struct"`
-			MyStructPtr *Rel                    `deepcopier:"field:StructPtr"`
-			Skipped     string                  `deepcopier:"skip"`
+			MyInt       int                     `structcopier:"field:Int"`
+			MyIntPtr    *int                    `structcopier:"field:IntPtr"`
+			MySlice     []string                `structcopier:"field:Slice"`
+			MySlicePtr  *[]string               `structcopier:"field:SlicePtr"`
+			MyMap       map[string]interface{}  `structcopier:"field:Map"`
+			MyMapPtr    *map[string]interface{} `structcopier:"field:MapPtr"`
+			MyStruct    Rel                     `structcopier:"field:Struct"`
+			MyStructPtr *Rel                    `structcopier:"field:StructPtr"`
+			Skipped     string                  `structcopier:"skip"`
 		}
 	)
 
@@ -91,7 +91,7 @@ func TestField(t *testing.T) {
 	//
 
 	dst := &Dst{}
-	assert.Nil(t, deepcopier.Copy(src).To(dst))
+	assert.Nil(t, structcopier.Copy(src).To(dst))
 	assert.Equal(t, src.Int, dst.Int)
 	assert.Equal(t, src.IntPtr, dst.IntPtr)
 	assert.Equal(t, src.Slice, dst.Slice)
@@ -103,7 +103,7 @@ func TestField(t *testing.T) {
 	assert.Zero(t, dst.Skipped)
 
 	dstRenamed := &Renamed{}
-	assert.Nil(t, deepcopier.Copy(src).To(dstRenamed))
+	assert.Nil(t, structcopier.Copy(src).To(dstRenamed))
 	assert.Equal(t, src.Int, dstRenamed.MyInt)
 	assert.Equal(t, src.IntPtr, dstRenamed.MyIntPtr)
 	assert.Equal(t, src.Slice, dstRenamed.MySlice)
@@ -119,7 +119,7 @@ func TestField(t *testing.T) {
 	//
 
 	dst = &Dst{}
-	assert.Nil(t, deepcopier.Copy(dst).From(src))
+	assert.Nil(t, structcopier.Copy(dst).From(src))
 	assert.Equal(t, src.Int, dst.Int)
 	assert.Equal(t, src.IntPtr, dst.IntPtr)
 	assert.Equal(t, src.Slice, dst.Slice)
@@ -131,7 +131,7 @@ func TestField(t *testing.T) {
 	assert.Zero(t, dst.Skipped)
 
 	dst = &Dst{}
-	assert.Nil(t, deepcopier.Copy(dst).From(srcRenamed))
+	assert.Nil(t, structcopier.Copy(dst).From(srcRenamed))
 	assert.Equal(t, srcRenamed.MyInt, dst.Int)
 	assert.Equal(t, srcRenamed.MyIntPtr, dst.IntPtr)
 	assert.Equal(t, srcRenamed.MySlice, dst.Slice)
@@ -164,17 +164,17 @@ func TestField_PointerToValue(t *testing.T) {
 		}
 
 		SrcRenamed struct {
-			MyInt    *int                    `deepcopier:"field:Int"`
-			MySlice  *[]string               `deepcopier:"field:Slice"`
-			MyMap    *map[string]interface{} `deepcopier:"field:Map"`
-			MyStruct *Rel                    `deepcopier:"field:Struct"`
+			MyInt    *int                    `structcopier:"field:Int"`
+			MySlice  *[]string               `structcopier:"field:Slice"`
+			MyMap    *map[string]interface{} `structcopier:"field:Map"`
+			MyStruct *Rel                    `structcopier:"field:Struct"`
 		}
 
 		DstRenamed struct {
-			MyInt    int                    `deepcopier:"field:Int"`
-			MySlice  []string               `deepcopier:"field:Slice"`
-			MyMap    map[string]interface{} `deepcopier:"field:Map"`
-			MyStruct Rel                    `deepcopier:"field:Struct"`
+			MyInt    int                    `structcopier:"field:Int"`
+			MySlice  []string               `structcopier:"field:Slice"`
+			MyMap    map[string]interface{} `structcopier:"field:Map"`
+			MyStruct Rel                    `structcopier:"field:Struct"`
 		}
 	)
 
@@ -204,14 +204,14 @@ func TestField_PointerToValue(t *testing.T) {
 	//
 
 	dst := &Dst{}
-	assert.Nil(t, deepcopier.Copy(src).To(dst))
+	assert.Nil(t, structcopier.Copy(src).To(dst))
 	assert.Equal(t, *src.Int, dst.Int)
 	assert.Equal(t, *src.Slice, dst.Slice)
 	assert.Equal(t, *src.Map, dst.Map)
 	assert.Equal(t, *src.Struct, dst.Struct)
 
 	dstRenamed := &DstRenamed{}
-	assert.Nil(t, deepcopier.Copy(src).To(dstRenamed))
+	assert.Nil(t, structcopier.Copy(src).To(dstRenamed))
 	assert.Equal(t, *src.Int, dstRenamed.MyInt)
 	assert.Equal(t, *src.Slice, dstRenamed.MySlice)
 	assert.Equal(t, *src.Map, dstRenamed.MyMap)
@@ -222,14 +222,14 @@ func TestField_PointerToValue(t *testing.T) {
 	//
 
 	dst = &Dst{}
-	assert.Nil(t, deepcopier.Copy(dst).From(src))
+	assert.Nil(t, structcopier.Copy(dst).From(src))
 	assert.Equal(t, *src.Int, dst.Int)
 	assert.Equal(t, *src.Slice, dst.Slice)
 	assert.Equal(t, *src.Map, dst.Map)
 	assert.Equal(t, *src.Struct, dst.Struct)
 
 	dst = &Dst{}
-	assert.Nil(t, deepcopier.Copy(dst).From(srcRenamed))
+	assert.Nil(t, structcopier.Copy(dst).From(srcRenamed))
 	assert.Equal(t, *srcRenamed.MyInt, dst.Int)
 	assert.Equal(t, *srcRenamed.MySlice, dst.Slice)
 	assert.Equal(t, *srcRenamed.MyMap, dst.Map)
@@ -256,7 +256,7 @@ func TestField_Unexported(t *testing.T) {
 	//
 
 	dst := &Dst{}
-	assert.Nil(t, deepcopier.Copy(src).To(dst))
+	assert.Nil(t, structcopier.Copy(src).To(dst))
 	assert.Equal(t, "", dst.unexported)
 
 	//
@@ -264,7 +264,7 @@ func TestField_Unexported(t *testing.T) {
 	//
 
 	dst = &Dst{}
-	assert.Nil(t, deepcopier.Copy(dst).From(src))
+	assert.Nil(t, structcopier.Copy(dst).From(src))
 	assert.Equal(t, "", dst.unexported)
 }
 
@@ -275,7 +275,7 @@ func TestField_Unknown(t *testing.T) {
 		}
 
 		Renamed struct {
-			MyInt int `deepcopier:"field:Integer"`
+			MyInt int `structcopier:"field:Integer"`
 		}
 	)
 
@@ -285,7 +285,7 @@ func TestField_Unknown(t *testing.T) {
 
 	src := &Original{Int: 1}
 	dstRenamed := &Renamed{}
-	assert.Nil(t, deepcopier.Copy(src).To(dstRenamed))
+	assert.Nil(t, structcopier.Copy(src).To(dstRenamed))
 	assert.Equal(t, 0, dstRenamed.MyInt)
 
 	//
@@ -294,7 +294,7 @@ func TestField_Unknown(t *testing.T) {
 
 	srcRenamed := &Renamed{MyInt: 1}
 	dst := &Original{}
-	assert.Nil(t, deepcopier.Copy(dst).From(srcRenamed))
+	assert.Nil(t, structcopier.Copy(dst).From(srcRenamed))
 	assert.Equal(t, 0, dst.Int)
 }
 
@@ -309,7 +309,7 @@ func TestField_EmptyInterface(t *testing.T) {
 		}
 
 		SrcForce struct {
-			Rel *Rel `deepcopier:"force"`
+			Rel *Rel `structcopier:"force"`
 		}
 
 		Dst struct {
@@ -317,7 +317,7 @@ func TestField_EmptyInterface(t *testing.T) {
 		}
 
 		DstForce struct {
-			Rel interface{} `deepcopier:"force"`
+			Rel interface{} `structcopier:"force"`
 		}
 	)
 
@@ -332,11 +332,11 @@ func TestField_EmptyInterface(t *testing.T) {
 	//
 
 	dst := &Dst{}
-	assert.Nil(t, deepcopier.Copy(src).To(dst))
+	assert.Nil(t, structcopier.Copy(src).To(dst))
 	assert.Nil(t, dst.Rel)
 
 	dst = &Dst{}
-	assert.Nil(t, deepcopier.Copy(dst).From(src))
+	assert.Nil(t, structcopier.Copy(dst).From(src))
 	assert.Nil(t, dst.Rel)
 
 	//
@@ -344,11 +344,11 @@ func TestField_EmptyInterface(t *testing.T) {
 	//
 
 	dstForce := &DstForce{}
-	assert.Nil(t, deepcopier.Copy(src).To(dstForce))
+	assert.Nil(t, structcopier.Copy(src).To(dstForce))
 	assert.Equal(t, src.Rel, dstForce.Rel)
 
 	dstForce = &DstForce{}
-	assert.Nil(t, deepcopier.Copy(dstForce).From(srcForce))
+	assert.Nil(t, structcopier.Copy(dstForce).From(srcForce))
 	assert.Equal(t, srcForce.Rel, dstForce.Rel)
 }
 
@@ -382,30 +382,30 @@ func TestField_NullTypes(t *testing.T) {
 		}
 
 		SrcForce struct {
-			PQNullTimeValid      pq.NullTime `deepcopier:"force"`
-			PQNullTimeValidPtr   pq.NullTime `deepcopier:"force"`
-			PQNullTimeInvalid    pq.NullTime `deepcopier:"force"`
-			PQNullTimeInvalidPtr pq.NullTime `deepcopier:"force"`
+			PQNullTimeValid      pq.NullTime `structcopier:"force"`
+			PQNullTimeValidPtr   pq.NullTime `structcopier:"force"`
+			PQNullTimeInvalid    pq.NullTime `structcopier:"force"`
+			PQNullTimeInvalidPtr pq.NullTime `structcopier:"force"`
 
-			NullStringValid      null.String `deepcopier:"force"`
-			NullStringValidPtr   null.String `deepcopier:"force"`
-			NullStringInvalid    null.String `deepcopier:"force"`
-			NullStringInvalidPtr null.String `deepcopier:"force"`
+			NullStringValid      null.String `structcopier:"force"`
+			NullStringValidPtr   null.String `structcopier:"force"`
+			NullStringInvalid    null.String `structcopier:"force"`
+			NullStringInvalidPtr null.String `structcopier:"force"`
 
-			SQLNullStringValid      sql.NullString `deepcopier:"force"`
-			SQLNullStringValidPtr   sql.NullString `deepcopier:"force"`
-			SQLNullStringInvalid    sql.NullString `deepcopier:"force"`
-			SQLNullStringInvalidPtr sql.NullString `deepcopier:"force"`
+			SQLNullStringValid      sql.NullString `structcopier:"force"`
+			SQLNullStringValidPtr   sql.NullString `structcopier:"force"`
+			SQLNullStringInvalid    sql.NullString `structcopier:"force"`
+			SQLNullStringInvalidPtr sql.NullString `structcopier:"force"`
 
-			SQLNullInt64Valid      sql.NullInt64 `deepcopier:"force"`
-			SQLNullInt64ValidPtr   sql.NullInt64 `deepcopier:"force"`
-			SQLNullInt64Invalid    sql.NullInt64 `deepcopier:"force"`
-			SQLNullInt64InvalidPtr sql.NullInt64 `deepcopier:"force"`
+			SQLNullInt64Valid      sql.NullInt64 `structcopier:"force"`
+			SQLNullInt64ValidPtr   sql.NullInt64 `structcopier:"force"`
+			SQLNullInt64Invalid    sql.NullInt64 `structcopier:"force"`
+			SQLNullInt64InvalidPtr sql.NullInt64 `structcopier:"force"`
 
-			SQLNullBoolValid      sql.NullBool `deepcopier:"force"`
-			SQLNullBoolValidPtr   sql.NullBool `deepcopier:"force"`
-			SQLNullBoolInvalid    sql.NullBool `deepcopier:"force"`
-			SQLNullBoolInvalidPtr sql.NullBool `deepcopier:"force"`
+			SQLNullBoolValid      sql.NullBool `structcopier:"force"`
+			SQLNullBoolValidPtr   sql.NullBool `structcopier:"force"`
+			SQLNullBoolInvalid    sql.NullBool `structcopier:"force"`
+			SQLNullBoolInvalidPtr sql.NullBool `structcopier:"force"`
 		}
 
 		Dst struct {
@@ -436,30 +436,30 @@ func TestField_NullTypes(t *testing.T) {
 		}
 
 		DstForce struct {
-			PQNullTimeValid      time.Time  `deepcopier:"force"`
-			PQNullTimeValidPtr   *time.Time `deepcopier:"force"`
-			PQNullTimeInvalid    time.Time  `deepcopier:"force"`
-			PQNullTimeInvalidPtr *time.Time `deepcopier:"force"`
+			PQNullTimeValid      time.Time  `structcopier:"force"`
+			PQNullTimeValidPtr   *time.Time `structcopier:"force"`
+			PQNullTimeInvalid    time.Time  `structcopier:"force"`
+			PQNullTimeInvalidPtr *time.Time `structcopier:"force"`
 
-			NullStringValid      string  `deepcopier:"force"`
-			NullStringValidPtr   *string `deepcopier:"force"`
-			NullStringInvalid    string  `deepcopier:"force"`
-			NullStringInvalidPtr *string `deepcopier:"force"`
+			NullStringValid      string  `structcopier:"force"`
+			NullStringValidPtr   *string `structcopier:"force"`
+			NullStringInvalid    string  `structcopier:"force"`
+			NullStringInvalidPtr *string `structcopier:"force"`
 
-			SQLNullStringValid      string  `deepcopier:"force"`
-			SQLNullStringValidPtr   *string `deepcopier:"force"`
-			SQLNullStringInvalid    string  `deepcopier:"force"`
-			SQLNullStringInvalidPtr *string `deepcopier:"force"`
+			SQLNullStringValid      string  `structcopier:"force"`
+			SQLNullStringValidPtr   *string `structcopier:"force"`
+			SQLNullStringInvalid    string  `structcopier:"force"`
+			SQLNullStringInvalidPtr *string `structcopier:"force"`
 
-			SQLNullInt64Valid      int64  `deepcopier:"force"`
-			SQLNullInt64ValidPtr   *int64 `deepcopier:"force"`
-			SQLNullInt64Invalid    int64  `deepcopier:"force"`
-			SQLNullInt64InvalidPtr *int64 `deepcopier:"force"`
+			SQLNullInt64Valid      int64  `structcopier:"force"`
+			SQLNullInt64ValidPtr   *int64 `structcopier:"force"`
+			SQLNullInt64Invalid    int64  `structcopier:"force"`
+			SQLNullInt64InvalidPtr *int64 `structcopier:"force"`
 
-			SQLNullBoolValid      bool  `deepcopier:"force"`
-			SQLNullBoolValidPtr   *bool `deepcopier:"force"`
-			SQLNullBoolInvalid    bool  `deepcopier:"force"`
-			SQLNullBoolInvalidPtr *bool `deepcopier:"force"`
+			SQLNullBoolValid      bool  `structcopier:"force"`
+			SQLNullBoolValidPtr   *bool `structcopier:"force"`
+			SQLNullBoolInvalid    bool  `structcopier:"force"`
+			SQLNullBoolInvalidPtr *bool `structcopier:"force"`
 		}
 	)
 
@@ -525,7 +525,7 @@ func TestField_NullTypes(t *testing.T) {
 
 	dst := &Dst{}
 
-	assert.Nil(t, deepcopier.Copy(src).To(dst))
+	assert.Nil(t, structcopier.Copy(src).To(dst))
 	assert.Zero(t, dst.PQNullTimeValid)
 	assert.Nil(t, dst.PQNullTimeValidPtr)
 	assert.Zero(t, dst.PQNullTimeInvalid)
@@ -556,7 +556,7 @@ func TestField_NullTypes(t *testing.T) {
 	//
 
 	dstForce := &DstForce{}
-	assert.Nil(t, deepcopier.Copy(srcForce).To(dstForce))
+	assert.Nil(t, structcopier.Copy(srcForce).To(dstForce))
 
 	assert.Equal(t, srcForce.PQNullTimeValid.Time, dstForce.PQNullTimeValid)
 	assert.NotNil(t, dstForce.PQNullTimeValidPtr)
@@ -607,7 +607,7 @@ func TestField_SameNameWithDifferentType(t *testing.T) {
 	srcInt := &FooInt{Foo: 1}
 	dstStr := &FooStr{}
 
-	assert.Nil(t, deepcopier.Copy(dstStr).From(srcInt))
+	assert.Nil(t, structcopier.Copy(dstStr).From(srcInt))
 	assert.Empty(t, dstStr.Foo)
 
 	//
@@ -615,7 +615,7 @@ func TestField_SameNameWithDifferentType(t *testing.T) {
 	//
 
 	dstStr = &FooStr{}
-	assert.Nil(t, deepcopier.Copy(dstStr).From(srcInt))
+	assert.Nil(t, structcopier.Copy(dstStr).From(srcInt))
 	assert.Empty(t, dstStr.Foo)
 }
 
@@ -630,7 +630,7 @@ func TestMethod(t *testing.T) {
 	// To()
 	//
 
-	assert.Nil(t, deepcopier.Copy(src).WithContext(c).To(dst))
+	assert.Nil(t, structcopier.Copy(src).WithContext(c).To(dst))
 	assert.Equal(t, c, dst.FooContext)
 	assert.Equal(t, MethodTesterFoo{}.FooInteger(), dst.FooInteger)
 	assert.Empty(t, dst.FooSkipped)
@@ -650,7 +650,7 @@ func TestMethod(t *testing.T) {
 	//
 
 	dst = &MethodTesterBar{}
-	assert.Nil(t, deepcopier.Copy(dst).WithContext(c).From(src))
+	assert.Nil(t, structcopier.Copy(dst).WithContext(c).From(src))
 	assert.Equal(t, c, dst.FooContext)
 	assert.Equal(t, MethodTesterFoo{}.FooInteger(), dst.FooInteger)
 	assert.Empty(t, dst.FooSkipped)
@@ -670,7 +670,7 @@ func TestAnonymousStruct(t *testing.T) {
 	type (
 		Embedded             struct{ Int int }
 		EmbeddedRenamedField struct {
-			MyInt int `deepcopier:"field:Int"`
+			MyInt int `structcopier:"field:Int"`
 		}
 
 		Src             struct{ Embedded }
@@ -678,7 +678,7 @@ func TestAnonymousStruct(t *testing.T) {
 
 		Dst             struct{ Int int }
 		DstRenamedField struct {
-			MyInt int `deepcopier:"field:Int"`
+			MyInt int `structcopier:"field:Int"`
 		}
 	)
 
@@ -694,11 +694,11 @@ func TestAnonymousStruct(t *testing.T) {
 	//
 
 	dst := &Dst{}
-	assert.Nil(t, deepcopier.Copy(src).To(dst))
+	assert.Nil(t, structcopier.Copy(src).To(dst))
 	assert.Equal(t, src.Int, dst.Int)
 
 	dstRenamedField := &DstRenamedField{}
-	assert.Nil(t, deepcopier.Copy(src).To(dstRenamedField))
+	assert.Nil(t, structcopier.Copy(src).To(dstRenamedField))
 	assert.Equal(t, src.Int, dstRenamedField.MyInt)
 
 	//
@@ -706,11 +706,11 @@ func TestAnonymousStruct(t *testing.T) {
 	//
 
 	dst = &Dst{}
-	assert.Nil(t, deepcopier.Copy(dst).From(src))
+	assert.Nil(t, structcopier.Copy(dst).From(src))
 	assert.Equal(t, src.Int, dst.Int)
 
 	dst = &Dst{}
-	assert.Nil(t, deepcopier.Copy(dst).From(srcRenamedField))
+	assert.Nil(t, structcopier.Copy(dst).From(srcRenamedField))
 	assert.Equal(t, srcRenamedField.MyInt, dst.Int)
 }
 
@@ -724,26 +724,26 @@ func TestNullableType(t *testing.T) {
 	}
 
 	type ToString struct {
-		UUID uuid.UUID `deepcopier:"force"`
+		UUID uuid.UUID `structcopier:"force"`
 	}
 
 	type PtrToString struct {
-		UUID *uuid.UUID `deepcopier:"force"`
+		UUID *uuid.UUID `structcopier:"force"`
 	}
 
 	type FromNullable struct {
-		UUID string `deepcopier:"force"`
+		UUID string `structcopier:"force"`
 	}
 
 	type PtrFromNullable struct {
-		UUID *string `deepcopier:"force"`
+		UUID *string `structcopier:"force"`
 	}
 
 	// Same type: value -- copy to
 	{
 		src := &Value{UUID: uuid.NewV4()}
 		dst := &Value{}
-		assert.Nil(t, deepcopier.Copy(src).To(dst))
+		assert.Nil(t, structcopier.Copy(src).To(dst))
 		assert.Equal(t, src.UUID, dst.UUID)
 	}
 
@@ -751,7 +751,7 @@ func TestNullableType(t *testing.T) {
 	{
 		src := &Value{}
 		from := &Value{UUID: uuid.NewV4()}
-		assert.Nil(t, deepcopier.Copy(src).From(from))
+		assert.Nil(t, structcopier.Copy(src).From(from))
 		assert.Equal(t, from.UUID, src.UUID)
 	}
 
@@ -760,7 +760,7 @@ func TestNullableType(t *testing.T) {
 		uid := uuid.NewV4()
 		src := &Ptr{UUID: &uid}
 		dst := &Ptr{}
-		assert.Nil(t, deepcopier.Copy(src).To(dst))
+		assert.Nil(t, structcopier.Copy(src).To(dst))
 		assert.Equal(t, src.UUID, dst.UUID)
 	}
 
@@ -769,7 +769,7 @@ func TestNullableType(t *testing.T) {
 		uid := uuid.NewV4()
 		src := &Ptr{}
 		from := &Ptr{UUID: &uid}
-		assert.Nil(t, deepcopier.Copy(src).From(from))
+		assert.Nil(t, structcopier.Copy(src).From(from))
 		assert.Equal(t, from.UUID, src.UUID)
 	}
 
@@ -777,7 +777,7 @@ func TestNullableType(t *testing.T) {
 	{
 		src := &Value{UUID: uuid.NewV4()}
 		dst := &FromNullable{}
-		assert.Nil(t, deepcopier.Copy(src).To(dst))
+		assert.Nil(t, structcopier.Copy(src).To(dst))
 		assert.Equal(t, src.UUID.String(), dst.UUID)
 	}
 
@@ -785,7 +785,7 @@ func TestNullableType(t *testing.T) {
 	{
 		src := &FromNullable{}
 		from := &ToString{UUID: uuid.NewV4()}
-		assert.Nil(t, deepcopier.Copy(src).From(from))
+		assert.Nil(t, structcopier.Copy(src).From(from))
 		assert.Equal(t, from.UUID.String(), src.UUID)
 	}
 
@@ -793,7 +793,7 @@ func TestNullableType(t *testing.T) {
 	{
 		src := &ToString{UUID: uuid.NewV4()}
 		dst := &PtrFromNullable{}
-		assert.Nil(t, deepcopier.Copy(src).To(dst))
+		assert.Nil(t, structcopier.Copy(src).To(dst))
 		assert.Equal(t, src.UUID.String(), *dst.UUID)
 	}
 
@@ -801,7 +801,7 @@ func TestNullableType(t *testing.T) {
 	{
 		src := &PtrFromNullable{}
 		from := &ToString{UUID: uuid.NewV4()}
-		assert.Nil(t, deepcopier.Copy(src).From(from))
+		assert.Nil(t, structcopier.Copy(src).From(from))
 		assert.Equal(t, from.UUID.String(), *src.UUID)
 	}
 
@@ -810,7 +810,7 @@ func TestNullableType(t *testing.T) {
 		uid := uuid.NewV4()
 		src := &PtrToString{UUID: &uid}
 		dst := &FromNullable{}
-		assert.Nil(t, deepcopier.Copy(src).To(dst))
+		assert.Nil(t, structcopier.Copy(src).To(dst))
 		assert.Equal(t, src.UUID.String(), dst.UUID)
 	}
 
@@ -819,7 +819,7 @@ func TestNullableType(t *testing.T) {
 		uid := uuid.NewV4()
 		src := &FromNullable{}
 		from := &PtrToString{UUID: &uid}
-		assert.Nil(t, deepcopier.Copy(src).From(from))
+		assert.Nil(t, structcopier.Copy(src).From(from))
 		assert.Equal(t, from.UUID.String(), src.UUID)
 	}
 }
@@ -830,9 +830,9 @@ func TestNullableType(t *testing.T) {
 
 type MethodTesterFoo struct {
 	BarInteger int
-	BarContext map[string]interface{} `deepcopier:"context"`
-	BarSkipped string                 `deepcopier:"skip"`
-	TagFirst   string                 `deepcopier:"field:GetTagFirst"`
+	BarContext map[string]interface{} `structcopier:"context"`
+	BarSkipped string                 `structcopier:"skip"`
+	TagFirst   string                 `structcopier:"field:GetTagFirst"`
 }
 
 func (MethodTesterFoo) FooInteger() int {
@@ -878,15 +878,15 @@ func (MethodTesterFoo) FooMapPtrToMap() *map[string]interface{} {
 
 type MethodTesterBar struct {
 	FooInteger           int
-	FooContext           map[string]interface{}  `deepcopier:"context"`
-	FooSkipped           string                  `deepcopier:"skip"`
-	TagFirst             string                  `deepcopier:"field:GetTagFirst"`
-	FooSliceToSlicePtr   *[]string               `deepcopier:"force"`
-	FooSlicePtrToSlice   []string                `deepcopier:"force"`
-	FooStringToStringPtr *string                 `deepcopier:"force"`
-	FooStringPtrToString string                  `deepcopier:"force"`
-	FooMapToMapPtr       *map[string]interface{} `deepcopier:"force"`
-	FooMapPtrToMap       map[string]interface{}  `deepcopier:"force"`
+	FooContext           map[string]interface{}  `structcopier:"context"`
+	FooSkipped           string                  `structcopier:"skip"`
+	TagFirst             string                  `structcopier:"field:GetTagFirst"`
+	FooSliceToSlicePtr   *[]string               `structcopier:"force"`
+	FooSlicePtrToSlice   []string                `structcopier:"force"`
+	FooStringToStringPtr *string                 `structcopier:"force"`
+	FooStringPtrToString string                  `structcopier:"force"`
+	FooMapToMapPtr       *map[string]interface{} `structcopier:"force"`
+	FooMapPtrToMap       map[string]interface{}  `structcopier:"force"`
 }
 
 func (MethodTesterBar) BarInteger() int {

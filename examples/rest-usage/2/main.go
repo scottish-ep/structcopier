@@ -5,7 +5,7 @@ import (
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
-	"github.com/scottish-ep/deepcopier"
+	"github.com/scottish-ep/structcopier"
 	"log"
 	"net/http"
 	"os"
@@ -51,7 +51,7 @@ func (a *Accounts) Detail(w rest.ResponseWriter, r *rest.Request) {
 
 	resource := &AccountResource{}
 
-	deepcopier.Copy(account).To(resource)
+	structcopier.Copy(account).To(resource)
 
 	w.WriteJson(&resource)
 }

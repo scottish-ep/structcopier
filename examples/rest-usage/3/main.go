@@ -5,7 +5,7 @@ import (
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
-	"github.com/scottish-ep/deepcopier"
+	"github.com/scottish-ep/structcopier"
 	"log"
 	"net/http"
 	"os"
@@ -30,7 +30,7 @@ type AccountResource struct {
 	Name       string    `json:"name"`
 	Email      string    `json:"email"`
 	DateJoined time.Time `json:"date_joined"`
-	ApiUrl     string    `deepcopier:"context" json:"api_url"`
+	ApiUrl     string    `structcopier:"context" json:"api_url"`
 }
 
 func (a Account) Name() string {
@@ -58,7 +58,7 @@ func (a *Accounts) Detail(w rest.ResponseWriter, r *rest.Request) {
 
 	context := map[string]interface{}{"base_url": r.BaseUrl()}
 
-	deepcopier.Copy(account).WithContext(context).To(resource)
+	structcopier.Copy(account).WithContext(context).To(resource)
 
 	w.WriteJson(&resource)
 }
